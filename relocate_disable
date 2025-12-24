@@ -1,0 +1,13 @@
+b smc911x_start // can not work that because the text_base been relocate to DRAM.
+export CROSS_COMPILE=arm-linux-gnueabihf-
+export ARCH=arm
+make distclean
+make ARCH=arm vexpress_ca9x4_defconfig
+make menuconfig 
+  --> to search relocate, disable it.
+check it in .config via grep relocate. in my case => ./.config:CONFIG_SKIP_RELOCATE=y
+make ARCH=arm  CFLAGS="-g -O0" CROSS_COMPILE=arm-linux-gnueabihf- -j$(nproc)
+then it works.
+uboot:> bdinfo
+  relocaddr   = 0x7fff0000
+  reloc off   = 0x00000000
