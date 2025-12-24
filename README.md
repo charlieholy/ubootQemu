@@ -1,0 +1,2 @@
+# ubootQemu
+uboot_debug
