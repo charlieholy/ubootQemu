@@ -1,0 +1,49 @@
+$8 = {cmdidx = 0x10, resp_type = 0x15, cmdarg = 0x200, response = {0x7fbb0450, 0x60824860, 0x7fbb0450, 0x2}}
+(gdb) bt
+#0  do_command (dev=0x7fbb0450, cmd=0x7fbafcbc) at drivers/mmc/arm_pl180_mmci.c:91
+#1  0x608222ac in mmc_send_cmd_retry (mmc=0x7fbb0450, cmd=0x7fbafcbc, data=0x0, retries=0x4) at drivers/mmc/mmc.c:266
+#2  0x608226b8 in mmc_set_blocklen (len=<optimized out>, mmc=<optimized out>) at drivers/mmc/mmc.c:364
+#3  mmc_set_blocklen (mmc=<optimized out>, len=<optimized out>) at drivers/mmc/mmc.c:353
+#4  0x60822784 in mmc_bread (dev=dev@entry=0x7fbb05a8, start=start@entry=0x0, blkcnt=blkcnt@entry=0x2, dst=dst@entry=0x60008008)
+    at drivers/mmc/mmc.c:544
+#5  0x6081e260 in blk_read (dev=0x7fbb05a8, start=start@entry=0x0, blkcnt=blkcnt@entry=0x2, buf=buf@entry=0x60008008)
+    at drivers/block/blk-uclass.c:460
+#6  0x6081e348 in blk_dread (desc=<optimized out>, start=start@entry=0x0, blkcnt=blkcnt@entry=0x2, buffer=buffer@entry=0x60008008)
+    at drivers/block/blk-uclass.c:520
+#7  0x608117a8 in do_mmc_read (argv=<optimized out>, argc=0x4, flag=<optimized out>, cmdtp=<optimized out>) at cmd/mmc.c:371
+#8  do_mmc_read (cmdtp=<optimized out>, flag=<optimized out>, argc=<optimized out>, argv=<optimized out>) at cmd/mmc.c:350
+#9  0x6081baf0 in cmd_call (repeatable=0x7fbafd7c, argv=0x7fbb1c48, argc=0x5, flag=0x0, cmdtp=0x60889bac <_u_boot_list_2_cmd_2_mmc>)
+    at common/command.c:582
+
+watch *0x10005008 // it works
+
+
+to enable dm command u should reconfig .config as following
+CONFIG_OF_EMBED=y
+=> dm tree
+ Class     Seq    Probed  Driver                Name
+-----------------------------------------------------------
+ root          0  [ + ]   root_driver           root_driver
+ simple_bus    0  [ + ]   simple_bus            |-- smb@4000000
+ simple_bus    1  [ + ]   simple_bus            |   `-- motherboard
+ mtd           0  [ + ]   cfi_flash             |       |-- flash@0,00000000
+ ethernet      0  [ + ]   eth_smc911x           |       |-- ethernet@3,02000000
+ bootdev       0  [   ]   eth_bootdev           |       |   `-- ethernet@3,02000000.bootdev
+ simple_bus    2  [ + ]   simple_bus            |       |-- iofpga@7,00000000
+ mmc           0  [ + ]   arm_pl180_mmc         |       |   |-- mmci@5000
+ blk           0  [ + ]   mmc_blk               |       |   |   |-- mmci@5000.blk
+ bootdev       1  [   ]   mmc_bootdev           |       |   |   `-- mmci@5000.bootdev
+ serial        0  [ + ]   serial_pl01x          |       |   |-- uart@9000
+ serial        1  [   ]   serial_pl01x          |       |   |-- uart@a000
+ serial        2  [   ]   serial_pl01x          |       |   |-- uart@b000
+ serial        3  [   ]   serial_pl01x          |       |   `-- uart@c000
+ clk           0  [ + ]   fixed_clock           |       |-- clk24mhz
+ clk           1  [   ]   fixed_clock           |       |-- refclk1mhz
+ clk           2  [   ]   fixed_clock           |       `-- refclk32khz
+ simple_bus    3  [   ]   simple_bus            |-- hsb@e0000000
+ bootstd       0  [   ]   bootstd_drv           |-- bootstd
+ bootmeth      0  [   ]   bootmeth_extlinux     |   |-- extlinux
+ bootmeth      1  [   ]   bootmeth_efi_mgr      |   |-- efi_mgr
+ bootmeth      2  [   ]   bootmeth_efi          |   |-- efi
+ bootmeth      3  [   ]   bootmeth_pxe          |   `-- pxe
+ efi           0  [   ]   EFI block driver      `-- efi
