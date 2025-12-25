@@ -1,0 +1,6 @@
+
+LAN9118 datasheet
+0x4e0000a4 MAC CSR Port
+
+
+watch *0x4e0000a4  // it works.
