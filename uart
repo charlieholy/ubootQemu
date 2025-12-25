@@ -1,0 +1,9 @@
+universal asyn read transmition
+
+drivers/serial/serial_pl01x.c
+
+0x10009020 IMSC
+0x10009024 IBRD
+0x10009028 FBRD
+
+watch *0x10009024  it works.
