@@ -1,0 +1,36 @@
+sudo parted /dev/<设备名称> --script mklabel gpt mkpart <自定义分区名称> <分区起始容量> <分区终止容量>
+
+//parted
+yum install -y parted
+112  ls /dev/vdb
+113  sudo parted /dev/vdb --script mklabel gpt mkpart primary 1MiB 100%
+114  sudo lsblk -f
+115  parted /dev/vdb  print
+118  parted /dev/vdb align-check optimal 1
+119  sudo partprobe  //  frash
+120  lsblk
+
+//make ext4
+121  mkfs -t ext4 /dev/vdb1
+122  lsblk -f
+
+//mount 
+126  mkdir /var/fpwork
+127  mount /dev/vdb1 /var/fpwork
+
+// auto mount
+131  cp /etc/fstab /etc/fstab.bak
+132  lsblk -f
+133  vi /etc/fstab
+134  sudo sh -c "echo sudo blkid /dev/vdb1 | awk '{print \$2}' | sed 's/\"//g' /var/fpwork ext4 defaults 0 0 >> /etc/fstab"
+135  vi /etc/fstab
+
+UUID=ca97b100-1b80-4545-8b2d-871d2ff1a231 /                       xfs     defaults        0 0
+UUID=5015-F793          /boot/efi               vfat    defaults,uid=0,gid=0,umask=077,shortname=winnt 0 2
+UUID=68dfd6a1-996e-42ce-a02a-297756377cc7 /var/fpwork ext4 defaults 0 0
+
+136  unmount /dev/vdb1
+137  umount /dev/vdb1
+138  lsblk
+139  mount -a
+140  lsblk
